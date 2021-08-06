@@ -31,8 +31,8 @@
         </b-form-file>
 
         <div class="spinner">
-          <b-button type="submit" variant="success" v-if="loading" block>Merge files</b-button>
-          <b-button type="submit" variant="success" v-if="!loading" disabled>
+          <b-button type="submit" variant="success" v-if="!loading" block>Merge files</b-button>
+          <b-button type="submit" variant="success" v-if="loading" disabled block>
             <b-spinner small type="grow"></b-spinner>
             Loading...
           </b-button>
@@ -53,7 +53,7 @@ export default {
       loading: false,
       jsonfile: [],
       showSuccessAlert: false,
-      shoeErrorAlert: false
+      showErrorAlert: false
     }
   },
   methods: {
@@ -68,12 +68,12 @@ export default {
         this.loading = false
         this.jsonfile = []
         this.showSuccessAlert = true
-        this.shoeErrorAlert = false
+        this.showErrorAlert = false
       } catch (error) {
         this.loading = false
         this.jsonfile = []
         this.showSuccessAlert = true
-        this.shoeErrorAlert = false
+        this.showErrorAlert = false
         console.log(error)
       }
     }
