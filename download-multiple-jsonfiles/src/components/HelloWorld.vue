@@ -20,8 +20,8 @@
     </div>
 
     <div>
-      <b-form @submit.prevent="mergeFiles" v-model="jsonfile">
-        <b-form-file multiple enctype="multipart/form-data">
+      <b-form @submit.prevent="mergeFiles">
+        <b-form-file multiple v-model="jsonfile" enctype="multipart/form-data">
           <template slot="file-name" slot-scope="{ names }" accept="file/*">
             <b-badge variant="dark">{{ names[0] }}</b-badge>
             <b-badge v-if="names.length > 1" variant="dark" class="ml-1">
