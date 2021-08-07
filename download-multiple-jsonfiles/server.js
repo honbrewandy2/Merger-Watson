@@ -17,19 +17,19 @@ jsonConcat({
 
 app.post('/', (req,res) => {
     try {
-        const files = [];
+        const files = './public/uploads';
         const dir = __filename;
         fs.readFileSync(dir).forEach((file) => {
             files.push(file)
         })
-        res.download(req.file)
+        res.download(files)
     } catch (error) {
         console.log(error)
     }
 })
 
-const port = 5000;
+const port = 5000
 
 app.listen(port, () => {
-    console.log("Server is listening to port", port)
+    console.log(`Server is listening to port ${port}`)
 })
