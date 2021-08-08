@@ -11,7 +11,13 @@
 
     <div>
       <b-form @submit.prevent="mergeFiles" enctype="multipart/form-data">
-        <b-form-file multiple v-model="jsonfile" accept="file/*">
+        <b-form-file
+          multiple
+          name="jsonfile"
+          @change="uploadFile"
+          accept="file/*"
+          required
+          >
           <template slot="file-name" slot-scope="{ names }">
             <b-badge variant="dark">{{ names[0] }}</b-badge>
             <b-badge v-if="names.length > 1" variant="dark" class="ml-1">
@@ -54,14 +60,25 @@ export default {
     };
   },
   methods: {
+    uploadFile(event) {
+      this.jsonfile = event.target.files;
+    },
+
     async mergeFiles() {
       const payload = new FormData();
+      let i = 0;
       for (const file of this.jsonfile) {
-        payload.append("jsonfile", file, file.name);
+        i += 1;
+        payload.append(`file[${i}]`, file);
       }
       this.loading = true;
       try {
-        await axios.post("http://localhost:3000", payload);
+        await axios({
+          url: "http://localhost:3000",
+          method: "POST",
+          data: payload,
+          headers: { "Content-Type": "multipart/form-data"}
+        });
         this.loading = false;
         this.showSuccessAlert = true;
         this.showErrorAlert = false;

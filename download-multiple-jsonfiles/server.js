@@ -1,25 +1,33 @@
-const express = require('express')
-const app = express()
-const cors = require('cors')
-const jsonConcat = require("json-concat");
+const express = require('express');
+const app = express();
+const cors = require('cors');
+const fs = require('fs');
+const bodyParser = require('body-parser');
 require('dotenv').config();
-jsonConcat({
-    src: ["appVars.json", "userVars.json"],
-    dest: "./config.json"
-}, function (json) {
-    console.log(json);
-});
+const jsonMerger = require("json-files-merger");
+const targetFolder = "public/uploads";
+const mergedJsonObject = jsonMerger.load(targetFolder);
 
-app.use(express.json())
+app.use(express.json());
+// app.use(bodyParser.json());
+// app.use(bodyParser.urlencoded({extended: false}));
 app.use(express.urlencoded({extended: false}))
 app.use(cors())
 
-app.post("/", (req,res) => {
+app.post('/', (req,res) => {
+    console.log('res:', req.files)
+    console.log('res:', res.data)
+    res.json(mergedJsonObject)
+})
+
+app.get("/public/uploads", async function(req,res) {
     try {
-        res.status(200)
+        const file = await fs.createWriteStream("report.json");
+        res.download(file);
     } catch (error) {
-        console.log(error)
+       await fs.unlinkSync(targetFolder) 
     }
+    
 })
 const port = process.env.PORT || 3000
 
