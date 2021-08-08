@@ -1,35 +1,28 @@
 const express = require('express')
 const app = express()
-const fs = require('fs')
 const cors = require('cors')
-const jsonConcat = require('json-concat')
+const jsonConcat = require("json-concat");
+require('dotenv').config();
+jsonConcat({
+    src: ["appVars.json", "userVars.json"],
+    dest: "./config.json"
+}, function (json) {
+    console.log(json);
+});
 
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 app.use(cors())
 
-jsonConcat({
-    src: './public/uploads',
-    dest: './config.js'
-}, function(json) {
-    console.log(json)
-})
-
-app.post('/', (req,res) => {
+app.post("/", (req,res) => {
     try {
-        const files = './public/uploads';
-        const dir = __filename;
-        fs.readFileSync(dir).forEach((file) => {
-            files.push(file)
-        })
-        res.download(files)
+        res.status(200)
     } catch (error) {
         console.log(error)
     }
 })
-
-const port = 5000
+const port = process.env.PORT || 3000
 
 app.listen(port, () => {
-    console.log(`Server is listening to port ${port}`)
+    console.log("Server is listening to port", port)
 })

@@ -61,16 +61,17 @@ export default {
       }
       this.loading = true;
       try {
-        await axios.post("http://localhost:5000", payload);
+        await axios.post("http://localhost:3000", payload);
         this.loading = false;
         this.showSuccessAlert = true;
         this.showErrorAlert = false;
         this.jsonfile = [];
+        console.log(payload);
       } catch (error) {
         this.loading = false;
         this.jsonfile = [];
-        this.showSuccessAlert = true;
-        this.showErrorAlert = false;
+        this.showSuccessAlert = false;
+        this.showErrorAlert = true;
         console.log(error);
       }
     },
