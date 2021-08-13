@@ -17,7 +17,7 @@
           @change="uploadFile"
           accept="file/*"
           required
-          >
+        >
           <template slot="file-name" slot-scope="{ names }">
             <b-badge variant="dark">{{ names[0] }}</b-badge>
             <b-badge v-if="names.length > 1" variant="dark" class="ml-1">
@@ -77,7 +77,7 @@ export default {
           url: "http://localhost:3000",
           method: "POST",
           data: payload,
-          headers: { "Content-Type": "multipart/form-data"}
+          headers: { "Content-Type": "multipart/form-data" },
         });
         this.loading = false;
         this.showSuccessAlert = true;
