@@ -38,12 +38,13 @@ app.post('/', (req,res) => {
     console.log(jsonConcat)
 })
 
-app.get("/public/uploads", async function(req,res) {
+app.get('/', async function(req,res) {
     try {
         const file = await fs.createWriteStream("result.json");
         res.download(file);
     } catch (error) {
-       await fs.unlinkSync() 
+       await fs.unlinkSync()
+       console.log(error)
     }
     
 })
