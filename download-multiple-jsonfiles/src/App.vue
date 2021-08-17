@@ -1,16 +1,16 @@
 <template>
   <div>
-    <HelloWorld />
+    <mergeFiles />
   </div>
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+import mergeFiles from "./components/mergeFiles.vue";
 
 export default {
   name: "App",
   components: {
-    HelloWorld,
+    mergeFiles,
   },
 };
 </script>
