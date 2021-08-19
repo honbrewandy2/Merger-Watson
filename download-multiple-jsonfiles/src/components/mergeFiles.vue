@@ -68,21 +68,18 @@ export default {
         const filelist = [];
         for (let file of this.$refs.jsonfiles.files) {
           const readfiles = () => {
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
               let reader = new FileReader();
               reader.readAsText(file);
 
               reader.onload = function (e) {
-                finaljson.push(JSON.parse(e.target.result));
-                resolve(finaljson);
-                console.log("onload:::", JSON.parse(e.target.result));
-              };
-
-              reader.onerror = function (e) {
-                if (e.target.error.code === "NotReadableError") {
-                  this.showErrorAlert = true;
-                  resolve(e.target.error.code);
-                  console.log("onerror:::", e.target.error.code);
+                try {
+                  finaljson.push(JSON.parse(e.target.result));
+                  resolve(finaljson);
+                  console.log("onload:::", JSON.parse(e.target.result));
+                } catch (error) {
+                  console.error("onerror:::", e.target.error);
+                  reject(finaljson);
                 }
               };
             });
