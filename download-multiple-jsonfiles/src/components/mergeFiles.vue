@@ -1,22 +1,25 @@
 <template>
   <div class="hello">
+    <h6>
+      <strong>Insert multiple JSON files to merge and download after</strong>
+    </h6>
+    <br />
     <div>
       <b-alert variant="success" dismissible fade v-model="showSuccessAlert">
         Merging of files was a success!
       </b-alert>
       <b-alert variant="danger" dismissible fade v-model="showErrorAlert">
-        Merging of files was a failure! Please try again
+        Invalid JSON File! Please try again
       </b-alert>
     </div>
     <div>
-      <b-form @submit.prevent="readFile" enctype="multipart/form-data">
+      <b-form @submit.prevent="onSubmit" enctype="multipart/form-data">
         <b-form-file
           multiple
-          name="jsonfile"
-          
+          v-model="jsonfiles"
           accept="file/*"
           required
-          ref="file"
+          ref="jsonfiles"
         >
           <template slot="file-name" slot-scope="{ names }">
             <b-badge variant="dark">{{ names[0] }}</b-badge>
@@ -28,7 +31,7 @@
 
         <div class="spinner">
           <b-button type="submit" variant="success" v-if="!loading" block>
-            Merge files
+            Merge & Download Files
           </b-button>
           <b-button
             type="submit"
@@ -52,53 +55,69 @@ export default {
   data() {
     return {
       loading: false,
-      jsonfile: [],
+      jsonfiles: [],
       showSuccessAlert: false,
       showErrorAlert: false,
     };
   },
   methods: {
-    readFile (event) {
+    onSubmit() {
+      let finaljson = [];
       // Check HTML5 File API Browser Support
-      if (window.File && window.FileList && window.FileReader) {       
-        const fileinput = event.target.files;
+      if (window.File && window.FileList && window.FileReader) {
         const filelist = [];
-        for (let  i = 0;  i < fileinput.length; i++) {
-          const files = fileinput[i]
-          const reader = new FileReader();
-          
-            reader.onload = function() {
-              filelist.push(JSON.parse(reader.result));
-              this.showSuccessAlert = true;
-            }
-            reader.onerror = function() {
-              (reader);
-              this.showErrorAlert = true
-            }
-                        
-          
-          reader.readAsArrayBuffer(files);
-           
-        
-        }
-        const sendJson = JSON.stringify()
-       if(sendJson && typeof sendJson === "object") {
-          const FileSaver = require('file-saver');
-          const mergedfiles = new File([sendJson], "result.json", {
-            type: "application/json; utf-8"
-          })
-          FileSaver.saveAs(mergedfiles)
-          console.log('response data?', sendJson)
-          
+        for (let file of this.$refs.jsonfiles.files) {
+          const readfiles = () => {
+            return new Promise((resolve) => {
+              let reader = new FileReader();
+              reader.readAsText(file);
+
+              reader.onload = function (e) {
+                finaljson.push(JSON.parse(e.target.result));
+                resolve(finaljson);
+                console.log("onload:::", JSON.parse(e.target.result));
+              };
+
+              reader.onerror = function (e) {
+                if (e.target.error.code === "NotReadableError") {
+                  this.showErrorAlert = true;
+                  resolve(e.target.error.code);
+                  console.log("onerror:::", e.target.error.code);
+                }
+              };
+            });
+          };
+          filelist.push(readfiles());
         }
 
-                
+        Promise.all(filelist)
+          .then((b) => {
+            const mergedfiles = [...new Set([...finaljson])];
+            const FileSaver = require("file-saver");
+            const downloadfiles = new File(
+              [JSON.stringify(mergedfiles)],
+              "merged-files.json",
+              { type: "application/json; utf-8" }
+            );
+            FileSaver.saveAs(downloadfiles);
+            this.showSuccessAlert = true;
+            this.jsonfiles = [];
+            console.log(b);
+          })
+          .catch((e) => {
+            console.log(e);
+            this.showErrorAlert = true;
+            this.jsonfiles = [];
+          });
+
+        console.log("fileLIst here::::", filelist);
+        console.log("fileList:::", filelist);
       } else {
         alert("Your browser is too old to support HTML5 File API");
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -108,6 +127,7 @@ export default {
   justify-content: center;
   align-items: center;
   margin-top: 100px;
+  font-family: Poppins, sans-serif;
 }
 .spinner {
   margin-top: 30px;
